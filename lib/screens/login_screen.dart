@@ -1,6 +1,8 @@
 import 'dart:developer';
 import 'package:flutter_application_1/screens/forgot_password_screen.dart';
+import 'package:flutter_application_1/screens/home_screen.dart';
 import 'package:flutter_application_1/screens/register_screen.dart';
+import 'package:flutter_application_1/utils/app_constants.dart';
 import 'package:flutter_application_1/widgets/text_form_field_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -111,12 +113,22 @@ class _LoginScreenState extends BaseClass<LoginScreen> {
                       vertical: 15,
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      authProvider.login(
+                      bool success = await authProvider.login(
                         _emailController.text,
                         _passwordController.text,
                       );
+                      if (mounted) {
+                        if (success) {
+                          gotoNextWithNoBack(HomeScreen());
+                        } else {
+                          showSnackBar(
+                            authProvider.errorMessage ?? 'Login failed',
+                            msgType: AppConstants.ERROR,
+                          );
+                        }
+                      }
                     }
                   },
                   child: Consumer<AuthProvider>(

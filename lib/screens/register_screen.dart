@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/providers/auth_provider.dart';
-import 'package:flutter_application_1/screens/login_screen.dart';
+import 'package:flutter_application_1/screens/home_screen.dart';
+import 'package:flutter_application_1/utils/app_constants.dart';
 import 'package:flutter_application_1/widgets/text_form_field_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -112,13 +113,23 @@ class _RegisterScreenState extends BaseClass<RegisterScreen> {
                       vertical: 15,
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      authProvider.register(
+                      bool success = await authProvider.register(
                         _usernameController.text,
                         _emailController.text,
                         _passwordController.text,
                       );
+                      if (mounted) {
+                        if (success) {
+                          gotoNextWithNoBack(HomeScreen());
+                        } else {
+                          showSnackBar(
+                            authProvider.errorMessage ?? 'Registration failed',
+                            msgType: AppConstants.ERROR,
+                          );
+                        }
+                      }
                     }
                   },
                   child: Consumer<AuthProvider>(

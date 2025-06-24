@@ -1,20 +1,24 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'providers/auth_provider.dart';
+import 'providers/auth_provider.dart' as FA;
 import 'utils/app_constants.dart';
 import 'utils/logger.dart';
+import 'widgets/two_button_dialog.dart';
 
 abstract class BaseClass<T extends StatefulWidget> extends State<T> {
   BaseClass() {}
 
-  late AuthProvider authProvider;
+  User get currentUser => FirebaseAuth.instance.currentUser!;
+
+  late FA.AuthProvider authProvider;
 
   initProvider() {
-    authProvider = Provider.of<AuthProvider>(context, listen: false);
+    authProvider = Provider.of<FA.AuthProvider>(context, listen: false);
   }
 
   gotoNextWithNoBack(Widget widget) {
@@ -67,7 +71,12 @@ abstract class BaseClass<T extends StatefulWidget> extends State<T> {
     Logger.warning(message, tag: tag);
   }
 
-  void error(String message, {String tag = 'Error', Object? error, StackTrace? stackTrace}) {
+  void error(
+    String message, {
+    String tag = 'Error',
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
     Logger.error(message, tag: tag, error: error, stackTrace: stackTrace);
   }
 
@@ -223,6 +232,49 @@ abstract class BaseClass<T extends StatefulWidget> extends State<T> {
       timeInSecForIosWeb: 1,
       textColor: Colors.white,
       fontSize: 17.0,
+    );
+  }
+
+  showLogoutDialog({bool chnageStatusColor = true}) {
+    changeSystemUiColor(
+      statusBarColor: Colors.white,
+      navBarColor: Colors.black.withOpacity(0.6),
+    );
+    var dialog = TwoButtonDialog(
+      title: "Logout",
+      message: "Are you sure, you want to logout?",
+      positiveBtnText: 'Yes',
+      negativeBtnText: 'No',
+      titleColor: Colors.black,
+      positiveColor: Colors.black,
+      negativeColor: Colors.black,
+      onPostivePressed: () async {
+        await authProvider.logout(context);
+        changeSystemUiColor(
+          statusBarColor: Colors.white,
+          navBarColor: Colors.white,
+        );
+      },
+      onNegativePressed: () {
+        changeSystemUiColor(
+          statusBarColor: Colors.white,
+          navBarColor: Colors.white,
+        );
+      },
+    );
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black.withOpacity(0.6),
+      builder: (BuildContext context) {
+        //prevent Back button press
+        return WillPopScope(
+          onWillPop: () {
+            return Future.value(false);
+          },
+          child: dialog,
+        );
+      },
     );
   }
 }
