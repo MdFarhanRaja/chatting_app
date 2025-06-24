@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'utils/app_constants.dart';
+import 'utils/logger.dart';
 
 abstract class BaseClass<T extends StatefulWidget> extends State<T> {
   BaseClass() {}
@@ -48,6 +49,26 @@ abstract class BaseClass<T extends StatefulWidget> extends State<T> {
 
   void onBackPress({Object? result}) {
     Navigator.pop(context, result);
+  }
+
+  void log(String message, {String tag = 'App'}) {
+    Logger.log(message, tag: tag);
+  }
+
+  void info(String message, {String tag = 'Info'}) {
+    Logger.info(message, tag: tag);
+  }
+
+  void success(String message, {String tag = 'Success'}) {
+    Logger.success(message, tag: tag);
+  }
+
+  void warning(String message, {String tag = 'Warning'}) {
+    Logger.warning(message, tag: tag);
+  }
+
+  void error(String message, {String tag = 'Error', Object? error, StackTrace? stackTrace}) {
+    Logger.error(message, tag: tag, error: error, stackTrace: stackTrace);
   }
 
   void hideKeyBoard({BuildContext? mContext}) {
@@ -138,7 +159,6 @@ abstract class BaseClass<T extends StatefulWidget> extends State<T> {
       // if (changestatusBarColor) {
       //   changeSystemUiColor(
       //       statusBarColor: statusBarColor, brightness: Brightness.light);
-      // }
       Navigator.pop(context);
     }
   }
@@ -155,7 +175,7 @@ abstract class BaseClass<T extends StatefulWidget> extends State<T> {
     Duration d = const Duration(milliseconds: 2500),
   }) {
     var scaffoldMessenger = ScaffoldMessenger.of(buildContext ?? context);
-    var sn = scaffoldMessenger.showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         backgroundColor: Colors.transparent,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
