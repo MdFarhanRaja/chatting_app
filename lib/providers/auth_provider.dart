@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/providers/base_provider.dart';
 import 'package:flutter_application_1/screens/login_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_application_1/services/notification_service.dart';
 import 'package:flutter_application_1/utils/logger.dart';
 
 class AuthProvider extends BaseProvider {
+  final NotificationService notificationService = NotificationService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _isLoading = false;
   String? _errorMessage;

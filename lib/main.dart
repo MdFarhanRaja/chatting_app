@@ -6,10 +6,12 @@ import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart' as FA;
 import 'screens/home_screen.dart';
 import 'screens/splash_screen.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await NotificationService().init(); // Initialize notification service
   final user = FirebaseAuth.instance.currentUser;
   if (user != null) {
     runApp(runWithProvider(const MyApp(isLoggedIn: true)));
