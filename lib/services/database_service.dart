@@ -51,14 +51,34 @@ CREATE TABLE notifications (
   }
 
   Future<List<NotificationMessage>> getNotifications() async {
-    final db = await instance.database;
-    final maps = await db.query('notifications', orderBy: 'timestamp DESC');
-
-    if (maps.isNotEmpty) {
-      return maps.map((json) => NotificationMessage.fromMap(json)).toList();
-    } else {
+    final db = await database;
+    // This raw query selects the most recent notification from each sender.
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+      'SELECT * FROM notifications WHERE id IN (SELECT MAX(id) FROM notifications GROUP BY senderId) ORDER BY timestamp DESC'
+    );
+    if (maps.isEmpty) {
       return [];
     }
+    return List.generate(maps.length, (i) {
+      return NotificationMessage.fromJson(maps[i]);
+    });
+  }
+
+  /// Fetches all notifications from a specific sender.
+  Future<List<NotificationMessage>> getChatHistory(String senderId) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'notifications',
+      where: 'senderId = ?',
+      whereArgs: [senderId],
+      orderBy: 'timestamp ASC', // Order by time to show a proper chat sequence
+    );
+    if (maps.isEmpty) {
+      return [];
+    }
+    return List.generate(maps.length, (i) {
+      return NotificationMessage.fromJson(maps[i]);
+    });
   }
 
   Future<void> close() async {

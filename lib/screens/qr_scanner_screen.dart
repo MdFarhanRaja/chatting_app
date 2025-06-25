@@ -2,23 +2,41 @@ import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/base_class.dart';
 import 'package:flutter_application_1/services/notification_service.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-class QrScannerScreen extends StatelessWidget {
+class QrScannerScreen extends StatefulWidget {
   const QrScannerScreen({super.key});
+
+  @override
+  State<QrScannerScreen> createState() => _QrScannerScreenState();
+}
+
+class _QrScannerScreenState extends BaseClass<QrScannerScreen> {
+  bool _isScanCompleted = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Scan QR Code')),
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text('Scan QR Code'),
+      ),
       body: MobileScanner(
         onDetect: (capture) {
-          final List<Barcode> barcodes = capture.barcodes;
-          if (barcodes.isNotEmpty) {
-            final String rawValue = barcodes.first.rawValue ?? "";
-            if (rawValue.isNotEmpty) {
-              _handleScannedCode(context, rawValue);
+          if (!_isScanCompleted) {
+            setState(() {
+              _isScanCompleted = true;
+            });
+            final List<Barcode> barcodes = capture.barcodes;
+            if (barcodes.isNotEmpty) {
+              final String rawValue = barcodes.first.rawValue ?? "";
+              if (rawValue.isNotEmpty) {
+                _handleScannedCode(context, rawValue);
+              }
             }
           }
         },
@@ -59,6 +77,6 @@ class QrScannerScreen extends StatelessWidget {
         context,
       ).showSnackBar(const SnackBar(content: Text('Failed to read QR code.')));
     }
-    Navigator.of(context).pop();
+    onBackPress();
   }
 }
