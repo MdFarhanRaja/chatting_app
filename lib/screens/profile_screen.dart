@@ -86,6 +86,7 @@ class _ProfileScreenState extends BaseClass<ProfileScreen> {
                       msg: 'This is a test notification sent via API call.',
                       senderId: currentUser.uid,
                       receiverId: currentUser.uid,
+                      userName: currentUser.displayName,
                     );
                   }
                 },

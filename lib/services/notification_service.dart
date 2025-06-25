@@ -1,24 +1,28 @@
+import 'dart:async';
+import 'package:firebase_core/firebase_core.dart';
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_application_1/services/key_file.dart';
 import 'package:flutter_application_1/utils/logger.dart';
-import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter_application_1/utils/app_constants.dart';
+import 'package:flutter_application_1/models/notification_message.dart';
+import 'package:flutter_application_1/services/database_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:googleapis_auth/auth_io.dart';
 
 // Must be a top-level function to handle background messages
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
   Logger.info("Handling a background message: ${message.messageId}");
   Logger.info('Message data: ${message.data}');
-  Logger.info('Message notification: ${message.notification?.title}');
+  final notification = NotificationMessage.fromJson(message.data);
+  await DatabaseService.instance.insertNotification(notification);
 }
 
 class NotificationService {
+  final _newNotificationController = StreamController<NotificationMessage>.broadcast();
+  Stream<NotificationMessage> get newNotificationStream => _newNotificationController.stream;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -70,29 +74,45 @@ class NotificationService {
       Logger.info('Got a message whilst in the foreground!');
       Logger.info('Message data: ${message.data}');
 
-      RemoteNotification? notification = message.notification;
-      AndroidNotification? android = message.notification?.android;
+      // Save notification to local DB from data payload
+      final notificationData = NotificationMessage.fromJson(message.data);
+      DatabaseService.instance.insertNotification(notificationData);
+      _newNotificationController.add(notificationData);
 
-      if (notification != null && android != null) {
-        Logger.info('Message also contained a notification: ${notification}');
-        _flutterLocalNotificationsPlugin.show(
-          notification.hashCode,
-          notification.title,
-          notification.body,
-          NotificationDetails(
-            android: AndroidNotificationDetails(
-              channel.id,
-              channel.name,
-              channelDescription: channel.description,
-              icon: android.smallIcon,
-            ),
-          ),
+      // If message also contains a notification payload, show it
+      if (message.notification != null) {
+        Logger.info(
+          'Message also contained a notification: ${message.notification}',
         );
+        _showLocalNotification(message);
       }
     });
 
     // Handle messages when the app is in the background or terminated
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  }
+
+
+
+  void _showLocalNotification(RemoteMessage message) {
+    RemoteNotification? notification = message.notification;
+    AndroidNotification? android = message.notification?.android;
+
+    if (notification != null && android != null) {
+      _flutterLocalNotificationsPlugin.show(
+        notification.hashCode,
+        notification.title,
+        notification.body,
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            channel.id,
+            channel.name,
+            channelDescription: channel.description,
+            icon: 'launch_background',
+          ),
+        ),
+      );
+    }
   }
 
   Future<String> getFCMToken() async {
@@ -129,6 +149,7 @@ class NotificationService {
     String? msg,
     String? senderId,
     String? receiverId,
+    String? userName,
   }) async {
     final String accessToken = await getFCMToken();
     Logger.info('Obtained Access Token: $accessToken');
@@ -150,6 +171,7 @@ class NotificationService {
           'body': msg ?? 'This is a test notification from your Dart server!',
         },
         'data': {
+          'userName': userName,
           'senderId': senderId,
           'receiverId': receiverId,
           'title': title,
