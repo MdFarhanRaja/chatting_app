@@ -1,8 +1,14 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_application_1/utils/logger.dart';
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_application_1/services/key_file.dart';
+import 'package:flutter_application_1/utils/logger.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_application_1/utils/app_constants.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:googleapis_auth/auth_io.dart';
 
 // Must be a top-level function to handle background messages
 @pragma('vm:entry-point')
@@ -89,41 +95,76 @@ class NotificationService {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }
 
-  Future<void> sendPushNotification({
+  Future<String> getFCMToken() async {
+    // Replace with the actual path to your service account key JSON file
+    final Map<String, dynamic> serviceAccountMap = keyFile;
+
+    // Define the required scopes for FCM
+    final List<String> scopes = [
+      'https://www.googleapis.com/auth/firebase.messaging',
+    ];
+
+    // Create credentials from the service account key
+    final credentials = ServiceAccountCredentials.fromJson(serviceAccountMap);
+
+    // Obtain an authenticated client
+    // The autoRefreshingAuthClient will handle token refreshing automatically
+    final client = await clientViaServiceAccount(credentials, scopes);
+
+    // Get the access token
+    final String accessToken = client.credentials.accessToken.data;
+
+    // Close the client when you're done (important for resource management)
+    // In a long-running server, you might keep the client alive.
+    // For a single request, you might close it immediately.
+    client.close();
+
+    return accessToken;
+  }
+
+  // Example of how to use it to send an FCM message
+  Future<void> sendFCMMessage({
     required String token,
     String? title,
-    String? body,
+    String? msg,
+    String? userId,
   }) async {
-    final dio = Dio();
-    final url =
-        'https://fcm.googleapis.com/v1/projects/chatapp-cb5e5/messages:send';
+    final String accessToken = await getFCMToken();
+    Logger.info('Obtained Access Token: $accessToken');
 
-    final headers = {'Content-Type': 'application/json'};
+    final url = Uri.parse(
+      'https://fcm.googleapis.com/v1/projects/chatapp-cb5e5/messages:send',
+    );
 
-    final data = {
-      'notification': {
-        'title': title ?? 'Test Notification',
-        'body': body ?? 'This is a test notification from the app!',
-      },
-      'to': token,
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
     };
 
-    try {
-      final response = await dio.post(
-        url,
-        data: data,
-        options: Options(headers: headers),
-      );
+    final body = jsonEncode({
+      'message': {
+        'token': token,
+        'notification': {
+          'title': title ?? 'Hello from Dart FCM',
+          'body': msg ?? 'This is a test notification from your Dart server!',
+        },
+        'data': {'userId': userId, 'title': title, 'msg': msg},
+      },
+    });
 
-      if (response.statusCode == 200) {
-        Logger.success('Push notification sent successfully.');
-      } else {
-        Logger.error(
-          'Failed to send push notification: ${response.statusCode} ${response.data}',
-        );
-      }
-    } catch (e) {
-      Logger.error('Error sending push notification: $e');
+    final response = await Dio().post(
+      url.toString(),
+      data: body,
+      options: Options(headers: headers),
+    );
+
+    if (response.statusCode == 200) {
+      Logger.success('FCM message sent successfully: ${response.data}');
+    } else {
+      Logger.error(
+        'Failed to send FCM message. Status code: ${response.statusCode}',
+      );
+      Logger.error('Response body: ${response.data}');
     }
   }
 }

@@ -80,10 +80,11 @@ class _ProfileScreenState extends BaseClass<ProfileScreen> {
               ElevatedButton(
                 onPressed: () {
                   if (_fcmToken != null) {
-                    authProvider.notificationService.sendPushNotification(
+                    authProvider.notificationService.sendFCMMessage(
                       token: _fcmToken!,
                       title: 'Hello from the App!',
-                      body: 'This is a test notification sent via API call.',
+                      msg: 'This is a test notification sent via API call.',
+                      userId: currentUser.uid,
                     );
                   }
                 },
