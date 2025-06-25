@@ -84,7 +84,8 @@ class _ProfileScreenState extends BaseClass<ProfileScreen> {
                       token: _fcmToken!,
                       title: 'Hello from the App!',
                       msg: 'This is a test notification sent via API call.',
-                      userId: currentUser.uid,
+                      senderId: currentUser.uid,
+                      receiverId: currentUser.uid,
                     );
                   }
                 },

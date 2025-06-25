@@ -127,7 +127,8 @@ class NotificationService {
     required String token,
     String? title,
     String? msg,
-    String? userId,
+    String? senderId,
+    String? receiverId,
   }) async {
     final String accessToken = await getFCMToken();
     Logger.info('Obtained Access Token: $accessToken');
@@ -148,7 +149,14 @@ class NotificationService {
           'title': title ?? 'Hello from Dart FCM',
           'body': msg ?? 'This is a test notification from your Dart server!',
         },
-        'data': {'userId': userId, 'title': title, 'msg': msg},
+        'data': {
+          'senderId': senderId,
+          'receiverId': receiverId,
+          'title': title,
+          'msg': msg,
+          'timestamp': DateTime.now().toIso8601String(),
+          'token': token,
+        },
       },
     });
 
