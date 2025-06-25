@@ -3,21 +3,26 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'firebase_options.dart';
 import 'providers/auth_provider.dart' as FA;
 import 'screens/home_screen.dart';
 import 'screens/splash_screen.dart';
 import 'services/notification_service.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  await NotificationService().init(); // Initialize notification service
-  final user = FirebaseAuth.instance.currentUser;
-  if (user != null) {
-    runApp(runWithProvider(const MyApp(isLoggedIn: true)));
-  } else {
-    runApp(runWithProvider(const MyApp(isLoggedIn: false)));
-  }
+  Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform).then((
+    _,
+  ) {
+    NotificationService().init().then((_) {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        runApp(runWithProvider(const MyApp(isLoggedIn: true)));
+      } else {
+        runApp(runWithProvider(const MyApp(isLoggedIn: false)));
+      }
+    });
+  });
 }
 
 runWithProvider(Widget app) {

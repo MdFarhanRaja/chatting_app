@@ -21,7 +21,8 @@ class NotificationService {
   final AndroidNotificationChannel channel = const AndroidNotificationChannel(
     'high_importance_channel', // id
     'High Importance Notifications', // title
-    description: 'This channel is used for important notifications.', // description
+    description:
+        'This channel is used for important notifications.', // description
     importance: Importance.high,
   );
 
@@ -29,7 +30,8 @@ class NotificationService {
     // Create the notification channel on Android
     await _flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(channel);
 
     // Initialize the plugin for Android and iOS
@@ -37,10 +39,11 @@ class NotificationService {
         AndroidInitializationSettings('@mipmap/ic_launcher');
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings();
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsIOS,
+        );
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
     // Request permissions for iOS and newer Android versions
@@ -86,15 +89,16 @@ class NotificationService {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }
 
-  Future<void> sendPushNotification(
-      {required String token, String? title, String? body}) async {
+  Future<void> sendPushNotification({
+    required String token,
+    String? title,
+    String? body,
+  }) async {
     final dio = Dio();
-    final url = 'https://fcm.googleapis.com/fcm/send';
+    final url =
+        'https://fcm.googleapis.com/v1/projects/chatapp-cb5e5/messages:send';
 
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'key=${AppConstants.firebaseServerKey}',
-    };
+    final headers = {'Content-Type': 'application/json'};
 
     final data = {
       'notification': {
@@ -115,7 +119,8 @@ class NotificationService {
         Logger.success('Push notification sent successfully.');
       } else {
         Logger.error(
-            'Failed to send push notification: ${response.statusCode} ${response.data}');
+          'Failed to send push notification: ${response.statusCode} ${response.data}',
+        );
       }
     } catch (e) {
       Logger.error('Error sending push notification: $e');
