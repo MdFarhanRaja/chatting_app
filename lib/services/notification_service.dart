@@ -15,7 +15,17 @@ import '../utils/logger.dart';
 // Must be a top-level function to handle background messages
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e, stackTrace) {
+    Logger.error(
+      'Error in background message handler',
+      error: e,
+      stackTrace: stackTrace,
+    );
+  }
   Logger.info("Handling a background message: ${message.messageId}");
   Logger.info('Message data: ${message.data}');
   final notification = NotificationMessage.fromJson(message.data);
