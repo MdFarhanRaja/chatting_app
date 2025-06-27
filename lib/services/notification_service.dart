@@ -21,8 +21,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 class NotificationService {
-  final _newNotificationController = StreamController<NotificationMessage>.broadcast();
-  Stream<NotificationMessage> get newNotificationStream => _newNotificationController.stream;
+  final _newNotificationController =
+      StreamController<NotificationMessage>.broadcast();
+  Stream<NotificationMessage> get newNotificationStream =>
+      _newNotificationController.stream;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -91,8 +93,6 @@ class NotificationService {
     // Handle messages when the app is in the background or terminated
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }
-
-
 
   void _showLocalNotification(RemoteMessage message) {
     RemoteNotification? notification = message.notification;
@@ -177,7 +177,7 @@ class NotificationService {
           'title': title,
           'msg': msg,
           'timestamp': DateTime.now().toIso8601String(),
-          'token': token,
+          'token': await FirebaseMessaging.instance.getToken(),
         },
       },
     });

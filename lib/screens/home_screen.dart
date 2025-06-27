@@ -5,6 +5,7 @@ import 'package:flutter_application_1/screens/chat_screen.dart';
 import 'package:flutter_application_1/services/database_service.dart';
 
 import 'profile_screen.dart';
+import 'qr_scanner_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -81,6 +82,7 @@ class _HomeScreenState extends BaseClass<HomeScreen> {
                             (context) => ChatScreen(
                               senderId: notification.senderId!,
                               userName: notification.userName!,
+                              token: notification.token!,
                             ),
                       ),
                     ).then((_) {
@@ -96,6 +98,12 @@ class _HomeScreenState extends BaseClass<HomeScreen> {
             );
           }
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          gotoNext(const QrScannerScreen());
+        },
+        child: const Icon(Icons.qr_code_scanner),
       ),
     );
   }
