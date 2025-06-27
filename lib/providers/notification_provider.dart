@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_application_1/services/notification_service.dart';
 import 'package:flutter_application_1/models/notification_message.dart';
@@ -13,12 +14,14 @@ class NotificationProvider with ChangeNotifier {
   List<NotificationMessage> get notifications => _notifications;
 
   NotificationProvider(NotificationService notificationService) {
-    fetchNotifications();
-    _notificationSubscription = notificationService.newNotificationStream.listen(addNotification);
+    final currentUser = FirebaseAuth.instance.currentUser!;
+    fetchNotifications(currentUser.uid);
+    _notificationSubscription = notificationService.newNotificationStream
+        .listen(addNotification);
   }
 
-  Future<void> fetchNotifications() async {
-    _notifications = await _dbService.getNotifications();
+  Future<void> fetchNotifications(String currentUserUid) async {
+    _notifications = await _dbService.getNotifications(currentUserUid);
     notifyListeners();
   }
 

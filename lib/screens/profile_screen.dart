@@ -76,22 +76,6 @@ class _ProfileScreenState extends BaseClass<ProfileScreen> {
                 'User ID: ${currentUser.uid}',
                 style: const TextStyle(fontSize: 16),
               ),
-              const SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: () {
-                  if (_fcmToken != null) {
-                    authProvider.notificationService.sendFCMMessage(
-                      token: _fcmToken!,
-                      title: 'Hello from the App!',
-                      msg: 'This is a test notification sent via API call.',
-                      senderId: currentUser.uid,
-                      receiverId: currentUser.uid,
-                      userName: currentUser.displayName,
-                    );
-                  }
-                },
-                child: const Text('Send Test Notification'),
-              ),
             ],
           ),
         ),

@@ -1,3 +1,4 @@
+import 'package:flutter_application_1/models/user.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter_application_1/models/notification_message.dart';
@@ -61,11 +62,14 @@ CREATE TABLE notifications (
     );
   }
 
-  Future<List<NotificationMessage>> getNotifications() async {
+  Future<List<NotificationMessage>> getNotifications(
+    String currentUserUid,
+  ) async {
     final db = await database;
     // This raw query selects the most recent notification from each sender.
     final List<Map<String, dynamic>> maps = await db.rawQuery(
-      'SELECT * FROM notifications WHERE id IN (SELECT MAX(id) FROM notifications GROUP BY senderId) ORDER BY timestamp DESC',
+      'SELECT * FROM notifications WHERE id IN (SELECT MAX(id) FROM notifications GROUP BY senderId) AND senderId != ? ORDER BY timestamp DESC',
+      [currentUserUid],
     );
     if (maps.isEmpty) {
       return [];

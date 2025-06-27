@@ -20,7 +20,9 @@ class _HomeScreenState extends BaseClass<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _notificationsFuture = DatabaseService.instance.getNotifications();
+    _notificationsFuture = DatabaseService.instance.getNotifications(
+      currentUser.uid,
+    );
     initProvider();
     WidgetsFlutterBinding.ensureInitialized();
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -88,8 +90,8 @@ class _HomeScreenState extends BaseClass<HomeScreen> {
                     ).then((_) {
                       // Refresh the list when returning from chat screen
                       setState(() {
-                        _notificationsFuture =
-                            DatabaseService.instance.getNotifications();
+                        _notificationsFuture = DatabaseService.instance
+                            .getNotifications(currentUser.uid);
                       });
                     });
                   },
