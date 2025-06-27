@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/base_class.dart';
 import 'package:flutter_application_1/providers/notification_provider.dart';
+import 'package:flutter_application_1/providers/country_provider.dart';
 import 'package:flutter_application_1/providers/chat_provider.dart';
 import 'package:flutter_application_1/screens/home_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -49,6 +50,7 @@ Widget runWithProvider(Widget app) {
       ),
       ChangeNotifierProvider(create: (_) => ChatProvider()),
       ChangeNotifierProvider(create: (_) => AppLocaleProvider()),
+      ChangeNotifierProvider(create: (_) => CountryProvider()),
     ],
     child: app,
   );

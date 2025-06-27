@@ -27,5 +27,8 @@
     "username": "اسم المستخدم",
     "email": "البريد الإلكتروني",
     "userId": "رقم المستخدم",
-    "chats": "المحادثات"    
+    "chats": "المحادثات",
+    "country": "البلد",
+    "pleaseSelectYourCountry": "الرجاء اختيار بلدك",
+    "pleaseEnterYourCountry": "الرجاء إدخال بلدك"
 }

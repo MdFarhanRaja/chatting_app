@@ -16,6 +16,9 @@ class TextFormFieldWidget extends StatelessWidget {
   final ValueChanged<String>? onFieldSubmitted;
   final TextStyle? style;
   final InputDecoration? decoration;
+  final bool enableInteractiveSelection;
+  final bool enabled;
+  final VoidCallback? onTap;
 
   const TextFormFieldWidget({
     super.key,
@@ -34,6 +37,9 @@ class TextFormFieldWidget extends StatelessWidget {
     this.onFieldSubmitted,
     this.style,
     this.decoration,
+    this.enableInteractiveSelection = true,
+    this.enabled = true,
+    this.onTap,
   });
 
   @override
@@ -70,14 +76,17 @@ class TextFormFieldWidget extends StatelessWidget {
 
     return TextFormField(
       controller: controller,
+      enabled: enabled,
+      enableInteractiveSelection: enableInteractiveSelection,
       focusNode: focusNode,
       obscureText: obscureText,
       keyboardType: keyboardType,
       validator: validator,
       onSaved: onSaved,
       onChanged: onChanged,
-      onEditingComplete: onEditingComplete,
+      onTap: onTap,
       onFieldSubmitted: onFieldSubmitted,
+      onEditingComplete: onEditingComplete,
       style: style ?? const TextStyle(color: Colors.black),
       decoration: decoration ?? defaultDecoration,
     );

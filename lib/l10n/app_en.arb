@@ -27,5 +27,8 @@
     "username": "Username",
     "email": "Email",
     "userId": "User ID",
-    "chats": "Chats"
+    "chats": "Chats",
+    "country": "Country",
+    "pleaseSelectYourCountry": "Please select your country",
+    "pleaseEnterYourCountry": "Please enter your country"
 }

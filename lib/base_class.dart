@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'providers/app_locale_provider.dart';
 import 'providers/auth_provider.dart' as FA;
 import 'providers/chat_provider.dart';
+import 'providers/country_provider.dart';
 import 'utils/app_constants.dart';
 import 'utils/logger.dart';
 import 'widgets/two_button_dialog.dart';
@@ -21,11 +22,13 @@ abstract class BaseClass<T extends StatefulWidget> extends State<T> {
   late FA.AuthProvider authProvider;
   late ChatProvider chatProvider;
   late AppLocaleProvider appLocaleProvider;
+  late CountryProvider countryProvider;
 
   initProvider() {
     authProvider = Provider.of<FA.AuthProvider>(context, listen: false);
     chatProvider = Provider.of<ChatProvider>(context, listen: false);
     appLocaleProvider = Provider.of<AppLocaleProvider>(context, listen: false);
+    countryProvider = Provider.of<CountryProvider>(context, listen: false);
   }
 
   AppLocalizations AppLocale() {
