@@ -4,6 +4,7 @@ import 'package:flutter_application_1/models/notification_message.dart';
 import 'package:flutter_application_1/screens/chat_screen.dart';
 import 'package:flutter_application_1/services/database_service.dart';
 
+import 'map_screen.dart';
 import 'profile_screen.dart';
 import 'qr_scanner_screen.dart';
 
@@ -47,6 +48,12 @@ class _HomeScreenState extends BaseClass<HomeScreen> {
             icon: const CircleAvatar(child: Icon(Icons.person)),
             onPressed: () {
               gotoNext(const ProfileScreen());
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.map),
+            onPressed: () {
+              gotoNext(const MapScreen());
             },
           ),
           IconButton(
