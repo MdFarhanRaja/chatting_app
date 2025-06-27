@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:flutter_application_1/providers/notification_provider.dart';
-import 'package:flutter_application_1/providers/notification_provider.dart';
-import 'package:flutter_application_1/screens/profile_screen.dart';
-import 'package:flutter_application_1/screens/qr_scanner_screen.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_application_1/base_class.dart';
+import 'package:flutter_application_1/models/notification_message.dart';
+import 'package:flutter_application_1/screens/chat_screen.dart';
+import 'package:flutter_application_1/services/database_service.dart';
 
-import '../base_class.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,9 +14,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends BaseClass<HomeScreen> {
+  late Future<List<NotificationMessage>> _notificationsFuture;
+
   @override
   void initState() {
     super.initState();
+    _notificationsFuture = DatabaseService.instance.getNotifications();
     initProvider();
     WidgetsFlutterBinding.ensureInitialized();
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -37,7 +38,7 @@ class _HomeScreenState extends BaseClass<HomeScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text('Notifications'),
+        title: const Text('Chats'),
         actions: [
           IconButton(
             icon: const CircleAvatar(child: Icon(Icons.person)),
@@ -53,36 +54,48 @@ class _HomeScreenState extends BaseClass<HomeScreen> {
           ),
         ],
       ),
-      body: Consumer<NotificationProvider>(
-        builder: (context, provider, child) {
-          if (provider.notifications.isEmpty) {
-            return const Center(child: Text('No notifications yet.'));
+      body: FutureBuilder<List<NotificationMessage>>(
+        future: _notificationsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No notifications found.'));
+          } else {
+            final notifications = snapshot.data!;
+            return ListView.builder(
+              itemCount: notifications.length,
+              itemBuilder: (context, index) {
+                final notification = notifications[index];
+                return ListTile(
+                  leading: const CircleAvatar(child: Icon(Icons.person)),
+                  title: Text(notification.userName ?? 'Unknown Sender'),
+                  subtitle: Text(notification.msg ?? ''),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => ChatScreen(
+                              senderId: notification.senderId!,
+                              userName: notification.userName!,
+                            ),
+                      ),
+                    ).then((_) {
+                      // Refresh the list when returning from chat screen
+                      setState(() {
+                        _notificationsFuture =
+                            DatabaseService.instance.getNotifications();
+                      });
+                    });
+                  },
+                );
+              },
+            );
           }
-          return ListView.builder(
-            itemCount: provider.notifications.length,
-            itemBuilder: (context, index) {
-              final notification = provider.notifications[index];
-              return ListTile(
-                title: Text(notification.title ?? 'No Title'),
-                subtitle: Text(notification.msg ?? 'No Body'),
-                leading: CircleAvatar(
-                  child: Text(
-                    notification.userName != null &&
-                            notification.userName!.isNotEmpty
-                        ? notification.userName!.substring(0, 1).toUpperCase()
-                        : 'U',
-                  ),
-                ),
-              );
-            },
-          );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          gotoNext(const QrScannerScreen());
-        },
-        child: const Icon(Icons.qr_code_scanner),
       ),
     );
   }
