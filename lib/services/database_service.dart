@@ -18,7 +18,12 @@ class DatabaseService {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 2, onCreate: _createDB, onUpgrade: _onUpgrade);
+    return await openDatabase(
+      path,
+      version: 2,
+      onCreate: _createDB,
+      onUpgrade: _onUpgrade,
+    );
   }
 
   Future _createDB(Database db, int version) async {
@@ -41,20 +46,26 @@ CREATE TABLE notifications (
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
-      db.execute("ALTER TABLE notifications ADD COLUMN userName TEXT NOT NULL DEFAULT ''");
+      db.execute(
+        "ALTER TABLE notifications ADD COLUMN userName TEXT NOT NULL DEFAULT ''",
+      );
     }
   }
 
   Future<void> insertNotification(NotificationMessage notification) async {
     final db = await instance.database;
-    await db.insert('notifications', notification.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert(
+      'notifications',
+      notification.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   Future<List<NotificationMessage>> getNotifications() async {
     final db = await database;
     // This raw query selects the most recent notification from each sender.
     final List<Map<String, dynamic>> maps = await db.rawQuery(
-      'SELECT * FROM notifications WHERE id IN (SELECT MAX(id) FROM notifications GROUP BY senderId) ORDER BY timestamp DESC'
+      'SELECT * FROM notifications WHERE id IN (SELECT MAX(id) FROM notifications GROUP BY senderId) ORDER BY timestamp DESC',
     );
     if (maps.isEmpty) {
       return [];
@@ -65,12 +76,16 @@ CREATE TABLE notifications (
   }
 
   /// Fetches all notifications from a specific sender.
-  Future<List<NotificationMessage>> getChatHistory(String senderId) async {
+  Future<List<NotificationMessage>> getChatHistory(
+    String senderId,
+    String currentUserId,
+  ) async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
       'notifications',
-      where: 'senderId = ?',
-      whereArgs: [senderId],
+      where:
+          'senderId = ? AND receiverId = ? OR senderId = ? AND receiverId = ?',
+      whereArgs: [senderId, currentUserId, currentUserId, senderId],
       orderBy: 'timestamp ASC', // Order by time to show a proper chat sequence
     );
     if (maps.isEmpty) {

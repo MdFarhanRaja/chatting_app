@@ -33,7 +33,11 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _loadChatHistory() {
-    _chatHistoryFuture = DatabaseService.instance.getChatHistory(widget.senderId);
+    final currentUserId = _currentUser?.uid ?? '';
+    _chatHistoryFuture = DatabaseService.instance.getChatHistory(
+      widget.senderId,
+      currentUserId,
+    );
   }
 
   Future<void> _sendMessage() async {
@@ -43,7 +47,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
     if (_currentUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You must be logged in to send messages.')),
+        const SnackBar(
+          content: Text('You must be logged in to send messages.'),
+        ),
       );
       return;
     }
@@ -77,9 +83,9 @@ class _ChatScreenState extends State<ChatScreen> {
         _loadChatHistory();
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to send message: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to send message: $e')));
       _messageController.text = messageText;
     }
   }
@@ -87,9 +93,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.userName),
-      ),
+      appBar: AppBar(title: Text(widget.userName)),
       body: Column(
         children: [
           Expanded(
@@ -110,9 +114,13 @@ class _ChatScreenState extends State<ChatScreen> {
                       final message = messages[index];
                       final isMe = message.senderId == _currentUser?.uid;
                       return Align(
-                        alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                        alignment:
+                            isMe ? Alignment.centerRight : Alignment.centerLeft,
                         child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                          margin: const EdgeInsets.symmetric(
+                            vertical: 4,
+                            horizontal: 8,
+                          ),
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: isMe ? Colors.blue[100] : Colors.grey[300],
@@ -123,7 +131,9 @@ class _ChatScreenState extends State<ChatScreen> {
                             children: [
                               Text(
                                 message.userName ?? 'Unknown',
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                               const SizedBox(height: 4),
                               Text(message.msg ?? ''),
@@ -163,5 +173,3 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 }
-
-
