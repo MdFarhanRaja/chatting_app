@@ -4,16 +4,18 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_application_1/services/key_file.dart';
-import 'package:flutter_application_1/utils/logger.dart';
 import 'package:flutter_application_1/models/notification_message.dart';
 import 'package:flutter_application_1/services/database_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:googleapis_auth/auth_io.dart';
 
+import '../firebase_options.dart';
+import '../utils/logger.dart';
+
 // Must be a top-level function to handle background messages
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   Logger.info("Handling a background message: ${message.messageId}");
   Logger.info('Message data: ${message.data}');
   final notification = NotificationMessage.fromJson(message.data);

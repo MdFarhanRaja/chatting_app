@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter_application_1/screens/forgot_password_screen.dart';
 import 'package:flutter_application_1/screens/home_screen.dart';
 import 'package:flutter_application_1/screens/register_screen.dart';
