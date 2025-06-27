@@ -11,8 +11,6 @@ import '../base_class.dart';
 import '../providers/auth_provider.dart';
 
 class LoginScreen extends StatefulWidget {
-  static const String routeName = '/login';
-
   const LoginScreen({super.key});
 
   @override
@@ -41,6 +39,22 @@ class _LoginScreenState extends BaseClass<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: ImageIcon(AssetImage('assets/icons/arabic.png')),
+            onPressed: () {
+              if (appLocaleProvider.locale.languageCode == 'ar') {
+                appLocaleProvider.changeLocale(language: 'en');
+                log('Locale Changed....');
+              } else {
+                appLocaleProvider.changeLocale(language: 'ar');
+              }
+            },
+          ),
+        ],
+      ),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(32.0),
@@ -50,7 +64,7 @@ class _LoginScreenState extends BaseClass<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  'Welcome Back!',
+                  AppLocale().welcomeBack,
                   style: GoogleFonts.lato(
                     fontSize: 32.0,
                     fontWeight: FontWeight.bold,
@@ -59,20 +73,20 @@ class _LoginScreenState extends BaseClass<LoginScreen> {
                 ),
                 const SizedBox(height: 8.0),
                 Text(
-                  'Login to your account',
+                  AppLocale().loginToYourAccount,
                   style: GoogleFonts.lato(fontSize: 18.0, color: Colors.blue),
                 ),
                 const SizedBox(height: 40.0),
                 TextFormFieldWidget(
                   controller: _emailController,
-                  labelText: 'Email',
+                  labelText: AppLocale().email,
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
+                      return AppLocale().pleaseEnterYourEmail;
                     }
                     if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                      return 'Please enter a valid email';
+                      return AppLocale().pleaseEnterAValidEmail;
                     }
                     return null;
                   },
@@ -80,11 +94,11 @@ class _LoginScreenState extends BaseClass<LoginScreen> {
                 const SizedBox(height: 20.0),
                 TextFormFieldWidget(
                   controller: _passwordController,
-                  labelText: 'Password',
+                  labelText: AppLocale().password,
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
+                      return AppLocale().pleaseEnterYourPassword;
                     }
                     return null;
                   },
@@ -95,7 +109,7 @@ class _LoginScreenState extends BaseClass<LoginScreen> {
                     gotoNext(ForgotPasswordScreen());
                   },
                   child: Text(
-                    'Forgot Password?',
+                    AppLocale().forgotPassword,
                     style: GoogleFonts.lato(color: Colors.blue),
                   ),
                 ),
@@ -115,6 +129,7 @@ class _LoginScreenState extends BaseClass<LoginScreen> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       bool success = await authProvider.login(
+                        context,
                         _emailController.text,
                         _passwordController.text,
                       );
@@ -123,7 +138,8 @@ class _LoginScreenState extends BaseClass<LoginScreen> {
                           gotoNextWithNoBack(HomeScreen());
                         } else {
                           showSnackBar(
-                            authProvider.errorMessage ?? 'Login failed',
+                            authProvider.errorMessage ??
+                                AppLocale().loginFailed,
                             msgType: AppConstants.ERROR,
                           );
                         }
@@ -139,7 +155,7 @@ class _LoginScreenState extends BaseClass<LoginScreen> {
                             ),
                           )
                           : Text(
-                            'LOGIN',
+                            AppLocale().login,
                             style: GoogleFonts.lato(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -153,7 +169,7 @@ class _LoginScreenState extends BaseClass<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      'Don\'t have an account?',
+                      AppLocale().dontHaveAnAccount,
                       style: GoogleFonts.lato(color: Colors.blue),
                     ),
                     TextButton(
@@ -161,7 +177,7 @@ class _LoginScreenState extends BaseClass<LoginScreen> {
                         gotoNext(RegisterScreen());
                       },
                       child: Text(
-                        'Register',
+                        AppLocale().register,
                         style: GoogleFonts.lato(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,

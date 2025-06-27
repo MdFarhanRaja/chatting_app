@@ -40,8 +40,21 @@ class _ProfileScreenState extends BaseClass<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Profile'),
+        title: Text(AppLocale().myProfile),
         backgroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: ImageIcon(AssetImage('assets/icons/arabic.png')),
+            onPressed: () {
+              if (appLocaleProvider.locale.languageCode == 'ar') {
+                appLocaleProvider.changeLocale(language: 'en');
+                log('Locale Changed....');
+              } else {
+                appLocaleProvider.changeLocale(language: 'ar');
+              }
+            },
+          ),
+        ],
       ),
       backgroundColor: Colors.white,
       body: Center(
@@ -60,7 +73,7 @@ class _ProfileScreenState extends BaseClass<ProfileScreen> {
                 const CircularProgressIndicator(),
               const SizedBox(height: 40),
               Text(
-                'Username: ${currentUser.displayName ?? 'N/A'}',
+                '${AppLocale().username}: ${currentUser.displayName ?? 'N/A'}',
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -68,12 +81,12 @@ class _ProfileScreenState extends BaseClass<ProfileScreen> {
               ),
               const SizedBox(height: 10),
               Text(
-                'Email: ${currentUser.email ?? 'N/A'}',
+                '${AppLocale().email}: ${currentUser.email ?? 'N/A'}',
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 10),
               Text(
-                'User ID: ${currentUser.uid}',
+                '${AppLocale().userId}: ${currentUser.uid}',
                 style: const TextStyle(fontSize: 16),
               ),
             ],

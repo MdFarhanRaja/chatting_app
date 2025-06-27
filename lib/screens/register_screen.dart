@@ -9,8 +9,6 @@ import 'package:provider/provider.dart';
 import '../base_class.dart';
 
 class RegisterScreen extends StatefulWidget {
-  static const String routeName = '/register';
-
   const RegisterScreen({super.key});
 
   @override
@@ -41,6 +39,22 @@ class _RegisterScreenState extends BaseClass<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: ImageIcon(AssetImage('assets/icons/arabic.png')),
+            onPressed: () {
+              if (appLocaleProvider.locale.languageCode == 'ar') {
+                appLocaleProvider.changeLocale(language: 'en');
+                log('Locale Changed....');
+              } else {
+                appLocaleProvider.changeLocale(language: 'ar');
+              }
+            },
+          ),
+        ],
+      ),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(32.0),
@@ -50,7 +64,7 @@ class _RegisterScreenState extends BaseClass<RegisterScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  'Create Account',
+                  AppLocale().createAccount,
                   style: GoogleFonts.lato(
                     fontSize: 32.0,
                     fontWeight: FontWeight.bold,
@@ -59,16 +73,16 @@ class _RegisterScreenState extends BaseClass<RegisterScreen> {
                 ),
                 const SizedBox(height: 8.0),
                 Text(
-                  'Sign up to get started',
+                  AppLocale().signUpToGetStarted,
                   style: GoogleFonts.lato(fontSize: 18.0, color: Colors.blue),
                 ),
                 const SizedBox(height: 40.0),
                 TextFormFieldWidget(
                   controller: _usernameController,
-                  labelText: 'Username',
+                  labelText: AppLocale().username,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your username';
+                      return AppLocale().pleaseEnterYourUsername;
                     }
                     return null;
                   },
@@ -76,14 +90,14 @@ class _RegisterScreenState extends BaseClass<RegisterScreen> {
                 const SizedBox(height: 20.0),
                 TextFormFieldWidget(
                   controller: _emailController,
-                  labelText: 'Email',
+                  labelText: AppLocale().email,
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
+                      return AppLocale().pleaseEnterYourEmail;
                     }
                     if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                      return 'Please enter a valid email';
+                      return AppLocale().pleaseEnterAValidEmail;
                     }
                     return null;
                   },
@@ -91,11 +105,11 @@ class _RegisterScreenState extends BaseClass<RegisterScreen> {
                 const SizedBox(height: 20.0),
                 TextFormFieldWidget(
                   controller: _passwordController,
-                  labelText: 'Password',
+                  labelText: AppLocale().password,
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
+                      return AppLocale().pleaseEnterYourPassword;
                     }
                     return null;
                   },
@@ -116,6 +130,7 @@ class _RegisterScreenState extends BaseClass<RegisterScreen> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       bool success = await authProvider.register(
+                        context,
                         _usernameController.text,
                         _emailController.text,
                         _passwordController.text,
@@ -125,7 +140,8 @@ class _RegisterScreenState extends BaseClass<RegisterScreen> {
                           gotoNextWithNoBack(HomeScreen());
                         } else {
                           showSnackBar(
-                            authProvider.errorMessage ?? 'Registration failed',
+                            authProvider.errorMessage ??
+                                AppLocale().registrationFailed,
                             msgType: AppConstants.ERROR,
                           );
                         }
@@ -141,7 +157,7 @@ class _RegisterScreenState extends BaseClass<RegisterScreen> {
                             ),
                           )
                           : Text(
-                            'REGISTER',
+                            AppLocale().register,
                             style: GoogleFonts.lato(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -155,7 +171,7 @@ class _RegisterScreenState extends BaseClass<RegisterScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      'Already have an account?',
+                      AppLocale().alreadyHaveAnAccount,
                       style: GoogleFonts.lato(color: Colors.blue),
                     ),
                     TextButton(
@@ -163,7 +179,7 @@ class _RegisterScreenState extends BaseClass<RegisterScreen> {
                         onBackPress();
                       },
                       child: Text(
-                        'Login',
+                        AppLocale().login,
                         style: GoogleFonts.lato(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,

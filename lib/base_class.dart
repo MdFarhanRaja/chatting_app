@@ -5,11 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'providers/app_locale_provider.dart';
 import 'providers/auth_provider.dart' as FA;
 import 'providers/chat_provider.dart';
 import 'utils/app_constants.dart';
 import 'utils/logger.dart';
 import 'widgets/two_button_dialog.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 abstract class BaseClass<T extends StatefulWidget> extends State<T> {
   BaseClass() {}
@@ -18,11 +20,19 @@ abstract class BaseClass<T extends StatefulWidget> extends State<T> {
 
   late FA.AuthProvider authProvider;
   late ChatProvider chatProvider;
+  late AppLocaleProvider appLocaleProvider;
 
   initProvider() {
     authProvider = Provider.of<FA.AuthProvider>(context, listen: false);
     chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    appLocaleProvider = Provider.of<AppLocaleProvider>(context, listen: false);
   }
+
+  AppLocalizations AppLocale() {
+    return AppLocalizations.of(context)!;
+  }
+
+  bool get isArabic => appLocaleProvider.locale.languageCode == 'ar';
 
   gotoNextWithNoBack(Widget widget) {
     Navigator.pushAndRemoveUntil(

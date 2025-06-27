@@ -17,19 +17,13 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -55,6 +49,22 @@ class DefaultFirebaseOptions {
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyC_Vh7opSZCmNRLnTDX8GEBoEyYELjg3l0',
     appId: '1:841446603148:android:441916b8e3e6cc11e3bea9',
+    messagingSenderId: '841446603148',
+    projectId: 'chatapp-cb5e5',
+    storageBucket: 'chatapp-cb5e5.firebasestorage.app',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyC_Vh7opSZCmNRLnTDX8GEBoEyYELjg3l0',
+    appId: '1:841446603148:ios:441916b8e3e6cc11e3bea9',
+    messagingSenderId: '841446603148',
+    projectId: 'chatapp-cb5e5',
+    storageBucket: 'chatapp-cb5e5.firebasestorage.app',
+  );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyC_Vh7opSZCmNRLnTDX8GEBoEyYELjg3l0',
+    appId: '1:841446603148:web:441916b8e3e6cc11e3bea9',
     messagingSenderId: '841446603148',
     projectId: 'chatapp-cb5e5',
     storageBucket: 'chatapp-cb5e5.firebasestorage.app',

@@ -41,7 +41,7 @@ class _HomeScreenState extends BaseClass<HomeScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text('Chats'),
+        title: Text(AppLocale().chats),
         actions: [
           IconButton(
             icon: const CircleAvatar(child: Icon(Icons.person)),
@@ -50,7 +50,10 @@ class _HomeScreenState extends BaseClass<HomeScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.logout_rounded, color: Colors.black),
+            icon: RotatedBox(
+              quarterTurns: isArabic ? 2 : 0,
+              child: const Icon(Icons.logout_rounded, color: Colors.black),
+            ),
             onPressed: () {
               showLogoutDialog();
             },

@@ -69,7 +69,7 @@ class AppPref {
     addInt(USER_TYPE, val);
   }
 
-  setAppLocale(String key, String val) async {
+  static setAppLocale(String key, String val) async {
     final prefs = await SharedPreferences.getInstance();
     return await prefs.setString(key, val);
   }

@@ -67,7 +67,7 @@ class ChatProvider extends BaseProvider {
       );
     } catch (e) {
       _messages.remove(notification);
-      //notifyListeners();
+      notifyListeners();
       rethrow;
     }
   }
