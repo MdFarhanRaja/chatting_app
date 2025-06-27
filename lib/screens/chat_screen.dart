@@ -93,7 +93,11 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.userName)),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text(widget.userName),
+        backgroundColor: Colors.white,
+      ),
       body: Column(
         children: [
           Expanded(
@@ -147,8 +151,13 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            margin: EdgeInsets.all(20),
+            padding: EdgeInsets.only(left: 10),
             child: Row(
               children: [
                 Expanded(
@@ -156,7 +165,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     controller: _messageController,
                     decoration: const InputDecoration(
                       hintText: 'Type a message...',
-                      border: OutlineInputBorder(),
+                      border: InputBorder.none,
                     ),
                     onSubmitted: (_) => _sendMessage(),
                   ),
